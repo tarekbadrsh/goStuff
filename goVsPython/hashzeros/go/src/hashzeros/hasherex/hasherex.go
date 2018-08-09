@@ -1,11 +1,15 @@
+//time ./hasherex -t foo -c 1000000 > hasherex.trace
+//go tool trace hasherex.trace
+
 package main
 
 import (
 	"crypto/sha256"
 	"encoding/hex"
 	"flag"
-	"fmt"
 	"hashzeros"
+	"os"
+	"runtime/trace"
 	"strconv"
 	"strings"
 	"sync"
@@ -52,16 +56,20 @@ var tex = flag.String("t", " ", "text need to hash")
 var coun = flag.Int("c", 1000000, "count time hash")
 
 func main() {
+	trace.Start(os.Stdout)
+	defer trace.Stop()
 
 	flag.Parse()
 	text := *tex
 	count := *coun
-	data := []byte(text)
 
-	c1 := HashText(data)
-	res := hex.EncodeToString(c1[:])
-	fmt.Println(res)
+	// data := []byte(text)
+	// c1 := HashText(data)
+	// res := hex.EncodeToString(c1[:])
+	// fmt.Println(res)
 
-	pkgResult := hashzeros.GetBestZeros(text, count, 1000)
-	fmt.Println(pkgResult)
+	// pkgResult := hashzeros.GetBestZeros(text, count, 1000)
+	// fmt.Println(pkgResult)
+
+	_ = hashzeros.GetBestZeros(text, count, 1000)
 }
