@@ -8,17 +8,18 @@ import (
 // ParseJSONConfiguration : to parse config json file in Config object.
 // path : file should be json file.
 // Cofing : result object
-func ParseJSONConfiguration(path string, Config interface{}) {
+func ParseJSONConfiguration(path string, config interface{}) error {
 	file, err := os.Open(path)
 	if err != nil {
-		panic(err)
+		return err
 	}
+	defer file.Close()
+
 	decoder := json.NewDecoder(file)
 
-	err = decoder.Decode(&Config)
-	file.Close()
+	err = decoder.Decode(config)
 	if err != nil {
-		file.Close()
-		panic(err)
+		return err
 	}
+	return nil
 }
