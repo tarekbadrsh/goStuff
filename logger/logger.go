@@ -44,9 +44,7 @@ func setFileLogger(level logging.Level, filePath string) *logging.LeveledBackend
 func SetLogger(loggerType string, loggerLevel int64, logdir string) error {
 	switch loggerType {
 	case "f":
-		if _, errIsNotExist := os.Stat(logdir); os.IsNotExist(errIsNotExist) {
-			return errIsNotExist
-		}
+		createDir(logdir)
 		go func() {
 			for {
 				now := time.Now()
@@ -66,9 +64,7 @@ func SetLogger(loggerType string, loggerLevel int64, logdir string) error {
 		logging.SetBackend(*terminalLogger)
 	case "a":
 		terminalLogger := setTerminalLogger(logging.Level(loggerLevel))
-		if _, errIsNotExist := os.Stat(logdir); os.IsNotExist(errIsNotExist) {
-			return errIsNotExist
-		}
+		createDir(logdir)
 		go func(terminalLogger *logging.LeveledBackend) {
 			for {
 				now := time.Now()
