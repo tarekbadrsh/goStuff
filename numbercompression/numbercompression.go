@@ -1,5 +1,7 @@
 package numbercompression
 
+//Ref https://stackoverflow.com/questions/5901153/compress-large-integers-into-smallest-possible-string
+
 var defaultEncodeDic = map[int64]string{
 	0:  "A",
 	1:  "B",
