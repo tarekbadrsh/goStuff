@@ -1,33 +1,15 @@
-package main
+package encryptfilessymmetric
 
 import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/sha256"
-	"flag"
 	"io"
 	"os"
 )
 
-// to encrypt
-// go run main.go -f "filepath" -k yourkey
-// to decrypt
-// go run main.go -p d -f "filepath" -k yourkey
-
-var f = flag.String("f", "file.txt", "your file path, defult 'file.txt'")
-var k = flag.String("k", "foo", "your encryption key, defult 'foo'")
-var p = flag.String("p", "e", "your operation {e:encrypt,d:decrypt}")
-
-func main() {
-	flag.Parse()
-	if *p == "e" {
-		encrypt(*f, *k)
-	} else if *p == "d" {
-		decrypt(*f, *k)
-	}
-}
-
-func encrypt(fileName, keytext string) []byte {
+// Encrypt file with password, it will panic if error.
+func Encrypt(fileName, keytext string) []byte {
 	// Load your secret key from a safe place and reuse it across multiple
 	// NewCipher calls. (Obviously don't use this example key for anything
 	// real.) If you want to convert a passphrase to a key, use a suitable
@@ -71,7 +53,8 @@ func encrypt(fileName, keytext string) []byte {
 	return nil
 }
 
-func decrypt(fileName, keytext string) []byte {
+// Decrypt file with password, it will panic if error.
+func Decrypt(fileName, keytext string) []byte {
 	// Load your secret key from a safe place and reuse it across multiple
 	// NewCipher calls. (Obviously don't use this example key for anything
 	// real.) If you want to convert a passphrase to a key, use a suitable

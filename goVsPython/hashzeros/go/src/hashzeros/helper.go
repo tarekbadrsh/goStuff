@@ -7,13 +7,13 @@ import (
 	"strings"
 )
 
-//HashTextNonce :
+// HashTextNonce :
 func HashTextNonce(bytetext []byte, nonce int) [32]byte {
 	dataToHash := append(bytetext, []byte(strconv.Itoa(nonce))...)
 	return sha256.Sum256(dataToHash)
 }
 
-//ChackHexadecimalZeros :
+// ChackHexadecimalZeros :
 func ChackHexadecimalZeros(hexadecimal []byte, ze string) (bool, string) {
 	encodeString := hex.EncodeToString(hexadecimal)
 	if !strings.HasPrefix(encodeString, ze) {
@@ -31,7 +31,7 @@ func ChackHexadecimalZeros(hexadecimal []byte, ze string) (bool, string) {
 	}
 }
 
-//BestZero :
+// BestZero :
 type BestZero struct {
 	Text      string
 	Nonce     int
