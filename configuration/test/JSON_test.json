@@ -1,0 +1,8 @@
+{
+    "LogPath"   :   "logpath",
+    "StopAfter" :   60,
+    "Emails"    :   [
+                        "foo@gmail.com", 
+                        "bar@gmail.com"
+                    ]
+}

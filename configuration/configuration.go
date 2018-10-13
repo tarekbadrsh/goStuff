@@ -5,10 +5,10 @@ import (
 	"os"
 )
 
-// ParseJSONConfiguration : to parse config json file in Config object.
+// JSON : to parse config json file in Config object.
 // path : file should be json file.
 // Cofing : result object
-func ParseJSONConfiguration(path string, config interface{}) error {
+func JSON(path string, config interface{}) error {
 	file, err := os.Open(path)
 	if err != nil {
 		return err
