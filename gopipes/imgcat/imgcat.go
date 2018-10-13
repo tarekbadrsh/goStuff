@@ -10,10 +10,7 @@ import (
 
 // Copy copies the given image reader and encodes it as an
 // iTerm2 image into the writer.
-func Copy(w io.Writer, r io.Reader) error {
-	header := strings.NewReader("\033]1337;File=inline=1:")
-	footer := strings.NewReader("\a\n")
-
+func copy(w io.Writer, header, r, footer io.Reader) error {
 	pr, pw := io.Pipe()
 	go func() {
 		defer pw.Close()
@@ -36,13 +33,20 @@ func Copy(w io.Writer, r io.Reader) error {
 }
 
 // NewWriter returns a new imgcat writer.
-func NewWriter(w io.Writer) io.WriteCloser {
+func NewWriter(w io.Writer, iterm2compatible bool) io.WriteCloser {
+	header := strings.NewReader("")
+	footer := strings.NewReader("")
+	if iterm2compatible {
+		header = strings.NewReader("\033]1337;File=inline=1:")
+		footer = strings.NewReader("\a\n")
+	}
+
 	pr, pw := io.Pipe()
 
 	wc := &writer{pw, make(chan struct{})}
 	go func() {
 		defer close(wc.done)
-		err := Copy(w, pr)
+		err := copy(w, header, pr, footer)
 		pr.CloseWithError(err)
 	}()
 	return wc
