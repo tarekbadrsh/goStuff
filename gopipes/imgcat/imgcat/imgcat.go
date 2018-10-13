@@ -31,3 +31,32 @@ func Copy(w io.Writer, r io.Reader) error {
 	_, err := io.Copy(w, io.MultiReader(header, pr, footer))
 	return err
 }
+
+type writer struct {
+	pw   *io.PipeWriter
+	done chan struct{}
+}
+
+// NewWriter returns a new imgcat writer.
+func NewWriter(w io.Writer) io.WriteCloser {
+	pr, pw := io.Pipe()
+	wc := &writer{pw, make(chan struct{})}
+	go func() {
+		defer close(wc.done)
+		err := Copy(w, pr)
+		pr.CloseWithError(err)
+	}()
+	return wc
+}
+
+func (w *writer) Write(data []byte) (int, error) {
+	return w.pw.Write(data)
+}
+
+func (w *writer) Close() error {
+	if err := w.pw.Close(); err != nil {
+		return err
+	}
+	<-w.done
+	return nil
+}
