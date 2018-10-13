@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
 
 	"github.com/pkg/errors"
+	"github.com/tarekbadrshalaan/goStuff/gopipes/imgcat"
 )
 
 func main() {
@@ -26,6 +28,10 @@ func cat(path string) error {
 		return errors.Wrap(err, "Could not open image")
 	}
 	defer f.Close()
+	wc := imgcat.Copy(nil, nil)
+	if _, err := io.Copy(wc, f); err != nil {
+		return err
+	}
 
-	return nil
+	return wc.Close()
 }
