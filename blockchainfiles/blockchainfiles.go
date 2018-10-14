@@ -1,4 +1,4 @@
-package createblockchainfiles
+package blockchainfiles
 
 import (
 	"encoding/json"

@@ -7,7 +7,7 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
-	"github.com/tarekbadrshalaan/goStuff/createblockchainfiles"
+	"github.com/tarekbadrshalaan/goStuff/blockchainfiles"
 )
 
 func removeAllJsonFiles() error {
@@ -45,7 +45,7 @@ func TestAddRecord(t *testing.T) {
 			UserID:   "456",
 			UserName: "foo",
 		}
-		err = createblockchainfiles.AddRecord("data.json", newuser, 5)
+		err = blockchainfiles.AddRecord("data.json", newuser, 5)
 		if err != nil {
 			t.Errorf("TestAddRecord\nerror:AddRecord:%v", err)
 		}
@@ -59,9 +59,9 @@ func TestAddRecord(t *testing.T) {
 		t.Errorf("filepath.Glob files count not as expected\nexpected:%v\actual:%v", 3, len(files))
 	}
 
-	datefile0, err := createblockchainfiles.GetdataFile(files[0])
+	datefile0, err := blockchainfiles.GetdataFile(files[0])
 	if err != nil {
-		t.Errorf("createblockchainfiles.GetdataFile Error:%v", err)
+		t.Errorf("blockchainfiles.GetdataFile Error:%v", err)
 	}
 	actual0 := user{}
 	mapstructure.Decode(datefile0.Recoreds[0], &actual0)
@@ -70,9 +70,9 @@ func TestAddRecord(t *testing.T) {
 		t.Errorf("datefile[0] is not as expected\nexpected %v\nactual %v", expected0, actual0)
 	}
 
-	datefile1, err := createblockchainfiles.GetdataFile(files[1])
+	datefile1, err := blockchainfiles.GetdataFile(files[1])
 	if err != nil {
-		t.Errorf("createblockchainfiles.GetdataFile Error:%v", err)
+		t.Errorf("blockchainfiles.GetdataFile Error:%v", err)
 	}
 	actual1 := user{}
 	mapstructure.Decode(datefile1.Recoreds[0], &actual1)
@@ -81,9 +81,9 @@ func TestAddRecord(t *testing.T) {
 		t.Errorf("datefile[1] is not as expected\nexpected %v\nactual %v", expected1, actual1)
 	}
 
-	datefile2, err := createblockchainfiles.GetdataFile(files[2])
+	datefile2, err := blockchainfiles.GetdataFile(files[2])
 	if err != nil {
-		t.Errorf("createblockchainfiles.GetdataFile Error:%v", err)
+		t.Errorf("blockchainfiles.GetdataFile Error:%v", err)
 	}
 	actual2 := user{}
 	mapstructure.Decode(datefile2.Recoreds[0], &actual2)
@@ -116,7 +116,7 @@ func BenchmarkAddRecord(b *testing.B) {
 			UserID:   "456",
 			UserName: "foo",
 		}
-		err = createblockchainfiles.AddRecord("data.json", newuser, 1000)
+		err = blockchainfiles.AddRecord("data.json", newuser, 1000)
 		if err != nil {
 			b.Errorf("BenchmarkAddRecord\nerror:AddRecord:%v", err)
 		}

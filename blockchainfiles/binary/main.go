@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/tarekbadrshalaan/goStuff/createblockchainfiles"
+	"github.com/tarekbadrshalaan/goStuff/blockchainfiles"
 )
 
 type user struct {
@@ -29,7 +29,7 @@ func main() {
 			CreatedAt: 123456789,
 		}
 
-		err := createblockchainfiles.AddRecord("data.json", newdata, 5)
+		err := blockchainfiles.AddRecord("data.json", newdata, 5)
 		if err != nil {
 			panic(err)
 		}
