@@ -35,7 +35,7 @@ func cat(path string) error {
 		wc := imgcat.NewWriter(pw, false)
 		defer wc.Close()
 		if _, err = io.Copy(wc, file); err != nil {
-			pw.CloseWithError(errors.Wrap(err, "could copy the image"))
+			pw.CloseWithError(errors.Wrap(err, "could not copy the image"))
 			return
 		}
 	}()
@@ -44,7 +44,7 @@ func cat(path string) error {
 	decodedIMG := base64.NewDecoder(base64.StdEncoding, pr)
 	_, err = io.Copy(newImage, decodedIMG)
 	if err != nil {
-		return errors.Wrap(err, "could copy to new image")
+		return errors.Wrap(err, "could not copy to new image")
 	}
 	return nil
 }

@@ -4,55 +4,81 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
-// DataFile :
+// DataFile : structure of file:
+// contain Nextpageid: refer to next page path and Recoreds : list of records.
 type DataFile struct {
 	Nextpageid string        `json:"nextpageid"`
 	Recoreds   []interface{} `json:"Recoreds"`
 }
 
-// AddRecord : appen new recored to file
-func AddRecord(newrecord interface{}, maxfileRecored int) error {
-	path := "data.json"
-	mydataFile := &DataFile{}
+func archiveFile(basefileName string) (string, error) {
+	unixNow := time.Now().Unix()
+	newpath := fmt.Sprintf("%d.json", unixNow)
+	counter := 0
+	for {
+		if _, err := os.Stat(newpath); os.IsNotExist(err) {
+			break
+		}
+		newpath = fmt.Sprintf("%d_%d.json", unixNow, counter)
+		counter++
+	}
 
-	data, err := ioutil.ReadFile(path)
+	err := os.Rename(basefileName, newpath)
+	if err != nil {
+		return "", errors.Wrapf(err, "could not rename basefileName:%v to newpath:%v", basefileName, newpath)
+	}
+	return newpath, nil
+}
+
+// GetdataFile : return object of Datafile from file path
+// it will return empty object if file not exist.
+func GetdataFile(path string) (*DataFile, error) {
+	dataFile := &DataFile{}
+	file, err := os.Open(path)
 	if os.IsNotExist(err) {
-		log.Printf("%v not exist", path)
-	} else {
-		if len(data) > 0 {
-			err = json.Unmarshal(data, mydataFile)
-			if err != nil {
-				panic(err)
-			}
-		}
+		return dataFile, nil
 	}
+	defer file.Close()
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(dataFile)
+	if err != nil {
+		return nil, errors.Wrap(err, "could not Decode dataFile")
+	}
+	return dataFile, nil
+}
 
-	if len(mydataFile.Recoreds) >= maxfileRecored {
-		unixNow := time.Now().Unix()
-		newpath := fmt.Sprintf("%d.json", unixNow)
-		err := os.Rename(path, newpath)
+// AddRecord : append new recored to file
+// If the file does not exist, AddRecord creates it with permissions perm.
+func AddRecord(basefileName string, newrecord interface{}, maxfileRecored int) error {
+	datafile, err := GetdataFile(basefileName)
+	if err != nil {
+		return errors.Wrap(err, "could not getdataFile")
+	}
+	if len(datafile.Recoreds) >= maxfileRecored {
+		newpath, err := archiveFile(basefileName)
 		if err != nil {
-			panic(err)
+			return errors.Wrapf(err, "could not archive file %v", basefileName)
 		}
-		mydataFile.Nextpageid = newpath
-		mydataFile.Recoreds = nil
+		datafile.Nextpageid = newpath
+		datafile.Recoreds = nil
 	}
 
-	mydataFile.Recoreds = append(mydataFile.Recoreds, newrecord)
+	datafile.Recoreds = append(datafile.Recoreds, newrecord)
 
-	data, err = json.Marshal(mydataFile)
+	marshaldata, err := json.Marshal(datafile)
 	if err != nil {
-		panic(err)
+		return errors.Wrapf(err, "could not Marshal dataFile %v", datafile)
 	}
 
-	err = ioutil.WriteFile(path, data, 0666)
+	err = ioutil.WriteFile(basefileName, marshaldata, 0666)
 	if err != nil {
-		panic(err)
+		return errors.Wrapf(err, "could not WriteFile %v", basefileName)
 	}
 	return nil
 }

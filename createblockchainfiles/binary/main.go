@@ -29,6 +29,9 @@ func main() {
 			CreatedAt: 123456789,
 		}
 
-		createblockchainfiles.AddRecord(newdata, 5)
+		err := createblockchainfiles.AddRecord("data.json", newdata, 5)
+		if err != nil {
+			panic(err)
+		}
 	}
 }
