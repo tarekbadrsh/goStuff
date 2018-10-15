@@ -43,7 +43,7 @@ func BenchmarkJSON(b *testing.B) {
 		StopAfter int64
 		Emails    []string
 	}
-	for index := int64(0); index < int64(b.N); index++ {
+	for index := 0; index < b.N; index++ {
 		config := &Objconf{}
 
 		err := configuration.JSON("JSON_test.json", config)
