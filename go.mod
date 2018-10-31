@@ -1,4 +1,4 @@
-module github.com/tarekbadrshalaan/goStuff/v2
+module github.com/tarekbadrshalaan/goStuff
 
 require (
 	github.com/chzyer/logex v1.1.10 // indirect
