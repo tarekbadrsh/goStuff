@@ -13,16 +13,15 @@ import (
 )
 
 func syslogTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString(fmt.Sprintf("| %-8d|:", t.Unix()))
+	enc.AppendString(fmt.Sprintf("|%s|", t.Format("2006-01-02T15:04:05")))
 }
 
 func customLevelEncoder(level zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString("[" + level.CapitalString() + "]")
+	enc.AppendString(fmt.Sprintf("[%v]", level.CapitalString()))
 }
 
 func customEncodeCaller(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder) {
-	// enc.AppendString(fmt.Sprintf("%d", caller.Line))
-	enc.AppendString("TTTest")
+	enc.AppendString(fmt.Sprintf("%d", caller.Line))
 }
 
 func main() {
@@ -98,4 +97,35 @@ func main() {
 
 	logger2.Info("logger2 construction succeeded")
 	logger2.Error("second error ...")
+
+	cfg2 := zap.Config{
+		Level:             zap.NewAtomicLevelAt(zap.InfoLevel),
+		Development:       false,
+		DisableCaller:     false,
+		DisableStacktrace: false,
+		Sampling:          nil,
+		// Encoding:      "console",
+		Encoding: "json",
+		EncoderConfig: zapcore.EncoderConfig{
+			// Keys can be anything except the empty string.
+			MessageKey:     "M",
+			LevelKey:       "L",
+			TimeKey:        "T",
+			NameKey:        "N",
+			CallerKey:      "C",
+			StacktraceKey:  "S",
+			LineEnding:     zapcore.DefaultLineEnding,
+			EncodeLevel:    customLevelEncoder,
+			EncodeTime:     syslogTimeEncoder,
+			EncodeDuration: zapcore.StringDurationEncoder,
+			EncodeCaller:   zapcore.ShortCallerEncoder,
+		},
+		OutputPaths:      []string{"stdout", "/tmp/logs"},
+		ErrorOutputPaths: []string{"stderr"},
+		InitialFields:    nil,
+	}
+	logger3, err := cfg2.Build()
+	logger3.Info("test")
+	logger3.Error("test")
+
 }
