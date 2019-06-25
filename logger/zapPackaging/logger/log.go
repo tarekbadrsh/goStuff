@@ -3,6 +3,7 @@ package logger
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/natefinch/lumberjack"
@@ -74,51 +75,68 @@ func InitiatLogger() {
 		zapcore.NewCore(terminalEncoder, terminalOutput, InfoLevel),
 		zapcore.NewCore(fileEncoder, fileOutput, ErrorLevel),
 	)
-	logger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
-	logger.Info("logger.info")
-	logger.Error("logger.Error ")
-	internalLogger = logger
+	internalLogger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 	doLoggerInitialized = true
 }
 
 // Debug :
-func Debug(msg string) {
+func Debug(format string, prm ...interface{}) {
 	if !doLoggerInitialized {
 		InitiatLogger()
 	}
-	internalLogger.Debug(msg)
+	var msg = fmt.Sprintf(format, prm...)
+	if ce := internalLogger.Check(zap.DebugLevel, msg); ce != nil {
+		ce.Entry.Caller = zapcore.NewEntryCaller(runtime.Caller(1))
+		ce.Write()
+	}
 }
 
 // Info :
-func Info(msg string) {
+func Info(format string, prm ...interface{}) {
 	if !doLoggerInitialized {
 		InitiatLogger()
 	}
-	internalLogger.Info(msg)
+	var msg = fmt.Sprintf(format, prm...)
+	if ce := internalLogger.Check(zap.InfoLevel, msg); ce != nil {
+		ce.Entry.Caller = zapcore.NewEntryCaller(runtime.Caller(1))
+		ce.Write()
+	}
 }
 
 // Warn :
-func Warn(msg string) {
+func Warn(format string, prm ...interface{}) {
 	if !doLoggerInitialized {
 		InitiatLogger()
 	}
-	internalLogger.Warn(msg)
+	var msg = fmt.Sprintf(format, prm...)
+	if ce := internalLogger.Check(zap.WarnLevel, msg); ce != nil {
+		ce.Entry.Caller = zapcore.NewEntryCaller(runtime.Caller(1))
+		ce.Write()
+	}
 }
 
 // Error :
-func Error(msg string) {
+func Error(format string, prm ...interface{}) {
 	if !doLoggerInitialized {
 		InitiatLogger()
 	}
-	internalLogger.Error(msg)
+	var msg = fmt.Sprintf(format, prm...)
+	if ce := internalLogger.Check(zap.ErrorLevel, msg); ce != nil {
+		ce.Entry.Caller = zapcore.NewEntryCaller(runtime.Caller(1))
+		ce.Write()
+	}
 }
 
 // Fatal :
-func Fatal(msg string) {
+func Fatal(format string, prm ...interface{}) {
 	if !doLoggerInitialized {
 		InitiatLogger()
 	}
-	internalLogger.Fatal(msg)
+	var msg = fmt.Sprintf(format, prm...)
+	if ce := internalLogger.Check(zap.FatalLevel, msg); ce != nil {
+		ce.Entry.Caller = zapcore.NewEntryCaller(runtime.Caller(1))
+		ce.Write()
+	}
 }
 
 // Sync :

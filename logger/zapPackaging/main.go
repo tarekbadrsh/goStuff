@@ -8,4 +8,7 @@ func main() {
 	logger.InitiatLogger()
 	defer logger.Sync()
 	logger.Info("hi")
+	logger.Warn("WarnWarnWarn")
+	logger.Error("ErrorErrorError")
+	logger.Fatal("FatalFatalFatal")
 }
