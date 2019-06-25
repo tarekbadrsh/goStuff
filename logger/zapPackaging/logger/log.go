@@ -79,64 +79,76 @@ func InitiatLogger() {
 	doLoggerInitialized = true
 }
 
-// Debug :
-func Debug(format string, prm ...interface{}) {
+func writer(lvl zapcore.Level, a ...interface{}) {
+	var msg = fmt.Sprint(a...)
 	if !doLoggerInitialized {
 		InitiatLogger()
 	}
-	var msg = fmt.Sprintf(format, prm...)
-	if ce := internalLogger.Check(zap.DebugLevel, msg); ce != nil {
-		ce.Entry.Caller = zapcore.NewEntryCaller(runtime.Caller(1))
+	if ce := internalLogger.Check(lvl, msg); ce != nil {
+		ce.Entry.Caller = zapcore.NewEntryCaller(runtime.Caller(2))
 		ce.Write()
 	}
+}
+
+func writerf(lvl zapcore.Level, format string, prm ...interface{}) {
+	var msg = fmt.Sprintf(format, prm...)
+	if !doLoggerInitialized {
+		InitiatLogger()
+	}
+	if ce := internalLogger.Check(lvl, msg); ce != nil {
+		ce.Entry.Caller = zapcore.NewEntryCaller(runtime.Caller(2))
+		ce.Write()
+	}
+}
+
+// Debug :
+func Debug(a ...interface{}) {
+	writer(zap.DebugLevel, a...)
+}
+
+// Debugf :
+func Debugf(format string, prm ...interface{}) {
+	writerf(zap.DebugLevel, format, prm...)
 }
 
 // Info :
-func Info(format string, prm ...interface{}) {
-	if !doLoggerInitialized {
-		InitiatLogger()
-	}
-	var msg = fmt.Sprintf(format, prm...)
-	if ce := internalLogger.Check(zap.InfoLevel, msg); ce != nil {
-		ce.Entry.Caller = zapcore.NewEntryCaller(runtime.Caller(1))
-		ce.Write()
-	}
+func Info(a ...interface{}) {
+	writer(zap.InfoLevel, a...)
+}
+
+// Infof :
+func Infof(format string, prm ...interface{}) {
+	writerf(zap.InfoLevel, format, prm...)
 }
 
 // Warn :
-func Warn(format string, prm ...interface{}) {
-	if !doLoggerInitialized {
-		InitiatLogger()
-	}
-	var msg = fmt.Sprintf(format, prm...)
-	if ce := internalLogger.Check(zap.WarnLevel, msg); ce != nil {
-		ce.Entry.Caller = zapcore.NewEntryCaller(runtime.Caller(1))
-		ce.Write()
-	}
+func Warn(a ...interface{}) {
+	writer(zap.WarnLevel, a...)
+}
+
+// Warnf :
+func Warnf(format string, prm ...interface{}) {
+	writerf(zap.WarnLevel, format, prm...)
 }
 
 // Error :
-func Error(format string, prm ...interface{}) {
-	if !doLoggerInitialized {
-		InitiatLogger()
-	}
-	var msg = fmt.Sprintf(format, prm...)
-	if ce := internalLogger.Check(zap.ErrorLevel, msg); ce != nil {
-		ce.Entry.Caller = zapcore.NewEntryCaller(runtime.Caller(1))
-		ce.Write()
-	}
+func Error(a ...interface{}) {
+	writer(zap.ErrorLevel, a...)
+}
+
+// Errorf :
+func Errorf(format string, prm ...interface{}) {
+	writerf(zap.ErrorLevel, format, prm...)
 }
 
 // Fatal :
-func Fatal(format string, prm ...interface{}) {
-	if !doLoggerInitialized {
-		InitiatLogger()
-	}
-	var msg = fmt.Sprintf(format, prm...)
-	if ce := internalLogger.Check(zap.FatalLevel, msg); ce != nil {
-		ce.Entry.Caller = zapcore.NewEntryCaller(runtime.Caller(1))
-		ce.Write()
-	}
+func Fatal(a ...interface{}) {
+	writer(zap.FatalLevel, a...)
+}
+
+// Fatalf :
+func Fatalf(format string, prm ...interface{}) {
+	writerf(zap.FatalLevel, format, prm...)
 }
 
 // Sync :
