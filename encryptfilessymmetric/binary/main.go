@@ -9,7 +9,7 @@ import (
 )
 
 // to encrypt
-// go run main.go -in in.txt -out decryptfile
+// go run main.go -in in.txt -out encryptfile
 // to decrypt
 // go run main.go -in decryptfile -out rowfile
 
