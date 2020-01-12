@@ -11,7 +11,7 @@ import (
 // to encrypt
 // go run main.go -in in.txt -out encryptfile
 // to decrypt
-// go run main.go -in decryptfile -out rowfile
+// go run main.go -in encryptfile -out rowfile
 
 var in = flag.String("in", "in.txt", "your input file path, default 'in.txt'")
 var out = flag.String("out", "out.txt", "your output file path, default 'out.txt'")
