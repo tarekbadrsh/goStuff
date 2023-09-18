@@ -29,7 +29,7 @@ func JSON(path string, config interface{}) error {
 // ENV : to parse configuration from environment variables.
 // Cofing : result object
 func ENV(config interface{}) error {
-	err := envconfig.Process("", &config)
+	err := envconfig.Process("", config)
 	if err != nil {
 		return err
 	}
